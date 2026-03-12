@@ -2,13 +2,14 @@
 
 ## Description
 
-Verify JDBC connectivity to an Azure SQL Database by running a simple query and returning the results as a DataFrame.
+Verify JDBC connectivity to an Azure SQL Database by reading the `Application.Cities` table and returning the results as a DataFrame.
 
 ## Connection Details
 
 - **Server:** `adventureworksltmg.database.windows.net`
 - **Database:** `wideworldimporters`
 - **Driver:** JDBC (SQL Server / `com.microsoft.sqlserver.jdbc.SQLServerDriver`)
+- **Table:** `Application.Cities`
 
 ## Authentication
 
@@ -19,6 +20,8 @@ Verify JDBC connectivity to an Azure SQL Database by running a simple query and 
 
 The module should detect the runtime environment and select the appropriate authentication method automatically.
 
+> **Local dev note:** The developer may not be logged in to Azure yet. If `DefaultAzureCredential` fails during a local run, stop and ask the user to run `az login` before retrying.
+
 ## Module
 
 - **File:** `src/spark_project/test_sql_connectivity.py`
@@ -26,4 +29,4 @@ The module should detect the runtime environment and select the appropriate auth
 - Helper functions:
   - `get_jdbc_url()` — builds the JDBC connection URL
   - `get_jdbc_properties(spark)` — returns JDBC connection properties with the appropriate auth token
-  - `read_test_query(spark)` — executes a simple test query (e.g., `SELECT 1 AS connected`) and returns the result DataFrame
+  - `read_cities(spark)` — reads the `Application.Cities` table via JDBC and returns it as a DataFrame

@@ -7,8 +7,8 @@ Built on the existing `spark_project` package structure.
 
 ## Package
 
-- **Package name:** `spark_project` (default)
-- **Source:** `src/spark_project/`
+- **Package name:** `hello_pyspark_local_dev`
+- **Source:** `src/hello_pyspark_local_dev/`
 - **Tests:** `tests/`
 
 ## Stack
@@ -25,7 +25,7 @@ Built on the existing `spark_project` package structure.
 
 ## Entry Point
 
-- **File:** `src/spark_project/main.py`
+- **File:** `main.py` (project root)
 - Fabric Spark Job Definition main file
 - Creates (or gets) the SparkSession
 - Calls the three modules in order:

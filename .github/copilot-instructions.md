@@ -38,3 +38,4 @@ Local PySpark development environment matching Microsoft Fabric Runtime 1.3
 ## Reference
 
 - See [Fabric Deployment Lessons Learned](fabric-deployment-lessons-learned.md) for deployment gotchas and best practices
+- See [Local Dev / Fabric Strategy](local-dev-fabric-strategy.md) for the dual-environment pattern (local dev container vs Fabric runtime)
