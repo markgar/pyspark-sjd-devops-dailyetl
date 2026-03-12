@@ -34,3 +34,7 @@ Local PySpark development environment matching Microsoft Fabric Runtime 1.3
 - Prefer DataFrame API over SQL strings
 - Use `spark.createDataFrame()` with explicit schemas in tests
 - Stop SparkSessions in test fixtures (session-scoped)
+
+## Reference
+
+- See [Fabric Deployment Lessons Learned](fabric-deployment-lessons-learned.md) for deployment gotchas and best practices
