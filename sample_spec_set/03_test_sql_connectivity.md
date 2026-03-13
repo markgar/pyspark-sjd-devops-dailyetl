@@ -6,7 +6,7 @@ Verify SQL connectivity to an Azure SQL Database by reading the `Application.Cit
 
 ## Connection Details
 
-- **Server:** `adventureworksltmg.database.windows.net`
+- **Server:** *(ask the user)*
 - **Database:** `wideworldimporters`
 - **Driver (local only):** JDBC (`com.microsoft.sqlserver.jdbc.SQLServerDriver`)
 - **Table:** `Application.Cities`

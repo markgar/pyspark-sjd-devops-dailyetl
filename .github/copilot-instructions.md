@@ -16,7 +16,7 @@ Local PySpark development environment matching Microsoft Fabric Runtime 1.3
 ## Code conventions
 
 - Line length: 120 characters
-- Source code lives in `src/hello_pyspark_local_dev/` (created by sjd-builder from CONSTITUTION.md)
+- Source code lives in `src/<package>/` (sjd-builder replaces the placeholder when scaffolding)
 - Tests live in `tests/`
 - Use `from __future__ import annotations` in all modules
 - Imports sorted by ruff (isort-compatible)

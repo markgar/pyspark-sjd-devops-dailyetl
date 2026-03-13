@@ -16,10 +16,17 @@ A trivial three-step PySpark ETL pipeline that demonstrates the spec format used
 
 ## How to use
 
-Point the sjd-builder agent at this directory:
+Select **sjd-builder** from the Copilot chat mode dropdown, then hand it specs one at a time:
 
 ```
-@sjd-builder implement the spec in sample_spec_set/
+implement sample_spec_set/01_people_to_csv.md
+implement sample_spec_set/02_csv_to_delta.md
+```
+
+Or point it at the whole directory to build everything in order:
+
+```
+implement the spec in sample_spec_set/
 ```
 
 The agent reads `CONSTITUTION.md` for project-level facts, then works through the numbered specs in order.

@@ -11,8 +11,8 @@ Unchanging project-level facts. Every numbered spec inherits these.
 
 ## Package
 
-- **Package name:** `hello_pyspark_local_dev`
-- **Source:** `src/hello_pyspark_local_dev/`
+- **Package name:** `pyspark_sjd_devops`
+- **Source:** `src/pyspark_sjd_devops/`
 - **Tests:** `tests/`
 
 
@@ -34,7 +34,7 @@ Unchanging project-level facts. Every numbered spec inherits these.
 
 ## Fabric Targets
 
-- **Workspace:** `daily_etl`
-- **Spark Job Definition:** `hello_pyspark_local_dev`
-- **Environment:** `hello_pyspark_local_dev`
-- **Default Lakehouse:** `pyspark_devops` (schema-disabled)
+- **Workspace:** `pyspark-sjd-devops`
+- **Spark Job Definition:** `pyspark-sjd-devops-sjd`
+- **Environment:** `pyspark-sjd-devops-env`
+- **Default Lakehouse:** `pyspark-sjd-devops-lh` (schema-disabled)

@@ -69,3 +69,4 @@ spark-warehouse/
 
 # VS Code
 .vscode/
+.DS_Store
