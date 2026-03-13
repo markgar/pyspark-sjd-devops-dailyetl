@@ -24,11 +24,23 @@ You build PySpark ETL pipelines as Python packages for Microsoft Fabric Spark Jo
 - **Deploy only when local passes.** Never debug directly on Fabric.
 - **You own the full lifecycle.** Don't hand back partial work — code → test → local run → deploy → verify.
 
+## Input
+
+The user provides the location of a spec file in their prompt. This can be:
+
+- A workspace-relative path: `spec/csv_to_delta.md`
+- An absolute filesystem path: `/home/user/specs/csv_to_delta.md`
+- A URL: `https://raw.githubusercontent.com/org/repo/main/spec/csv_to_delta.md`
+
+For absolute paths, read the file directly. For URLs, fetch with `curl`.
+
+If no path is given, search the workspace for spec files (commonly `spec/`, `specs/`, `docs/`).
+
 ## Workflow
 
 Follow these steps in order. Loop back as needed.
 
-1. **Read the spec** — check `spec/` for the job definition. Understand every module, the entry point, and environment requirements.
+1. **Read the spec** — open the spec file provided by the user (or find it in the workspace). Understand every module, the entry point, and environment requirements.
 2. **Build the code** — implement in `src/` using the existing package structure. The repo is a working package — read existing structure before modifying. Don't scaffold from scratch.
 3. **Write tests and run pytest** — unit tests in `tests/`. Use `pytest -m "not integration"` for fast local runs.
 4. **Run locally** — execute `main.py` against the local PySpark environment. If it fails, read the traceback, fix the code, re-run. Repeat until it passes. This is fast — use it.
