@@ -70,3 +70,10 @@ spark-warehouse/
 # VS Code
 .vscode/
 .DS_Store
+
+# Local MCP servers
+mcp/
+
+# Binary packages
+*.ispac
+*.bacpac
