@@ -52,6 +52,7 @@ RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
     && apt-get update \
     && apt-get install -y gh \
     && ACCEPT_EULA=Y apt-get install -y mssql-tools18 \
+    && apt-get install -y powershell \
     && rm -rf /var/lib/apt/lists/*
 
 ENV PATH="/opt/mssql-tools18/bin:${PATH}"
