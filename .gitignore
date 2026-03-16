@@ -78,3 +78,5 @@ spark-warehouse/
 # Binary packages
 *.ispac
 *.bacpac
+
+.dev-loop/

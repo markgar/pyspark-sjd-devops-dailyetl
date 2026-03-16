@@ -44,4 +44,12 @@ for mcp_dir in /opt/dacpac-mcp /opt/ssis-doc-mcp; do
     fi
 done
 
+# Install GitHub Copilot CLI extension (needed by dev-loop)
+if ! gh extension list 2>/dev/null | grep -q gh-copilot; then
+    echo "Installing gh-copilot extension ..."
+    gh extension install github/gh-copilot
+else
+    echo "gh-copilot extension already installed"
+fi
+
 echo "post-create.sh complete"
