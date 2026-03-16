@@ -1,0 +1,14 @@
+{
+  "servers": {
+    "dacpac-mcp": {
+      "type": "stdio",
+      "command": "/opt/dacpac-mcp/.venv/bin/python",
+      "args": ["-m", "dacpac_mcp"]
+    },
+    "ssis-doc-mcp": {
+      "type": "stdio",
+      "command": "/opt/ssis-doc-mcp/.venv/bin/python",
+      "args": ["-m", "ssis_doc_mcp"]
+    }
+  }
+}

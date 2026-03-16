@@ -67,8 +67,9 @@ derby.log
 metastore_db/
 spark-warehouse/
 
-# VS Code
-.vscode/
+# VS Code (use wildcard so negations work)
+.vscode/*
+!.vscode/mcp.json
 .DS_Store
 
 # Local MCP servers

@@ -52,10 +52,27 @@ RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
     && apt-get update \
     && apt-get install -y gh \
     && ACCEPT_EULA=Y apt-get install -y mssql-tools18 \
-    && apt-get install -y powershell \
     && rm -rf /var/lib/apt/lists/*
 
+# Install PowerShell (the apt package is amd64-only; use tarball on arm64)
+ARG PS_VERSION=7.4.6
+RUN ARCH="$(dpkg --print-architecture)" \
+    && if [ "$ARCH" = "amd64" ]; then \
+         apt-get update && apt-get install -y powershell && rm -rf /var/lib/apt/lists/*; \
+       else \
+         curl -fSL -o /tmp/ps.tar.gz \
+           "https://github.com/PowerShell/PowerShell/releases/download/v${PS_VERSION}/powershell-${PS_VERSION}-linux-${ARCH}.tar.gz" \
+         && mkdir -p /opt/microsoft/powershell/7 \
+         && tar zxf /tmp/ps.tar.gz -C /opt/microsoft/powershell/7 \
+         && chmod +x /opt/microsoft/powershell/7/pwsh \
+         && ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh \
+         && rm /tmp/ps.tar.gz; \
+       fi
+
 ENV PATH="/opt/mssql-tools18/bin:${PATH}"
+
+# Install uv (fast Python package manager for MCP server venvs)
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 # Install Python packages (baked into image)
 RUN pip install --no-cache-dir \
