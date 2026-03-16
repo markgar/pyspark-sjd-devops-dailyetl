@@ -1,21 +1,26 @@
-# 01 — Stock Item Dimension
+# 04 — Stock Item Dimension
 
 Incremental SCD Type 2 load of the Stock Item dimension from the WideWorldImporters OLTP database into a Fabric Lakehouse Delta table.
 
+> **Prerequisites:** [01_prerequisites.md](01_prerequisites.md) must be implemented first (lineage table, ETL cutoff table, seed data).
 > See [CONSTITUTION.md](CONSTITUTION.md) for package name, stack, connections, and environment details.
 
 ## SSIS Lineage
 
-This spec documents the behavior of the **Load Stock Item Dimension** sequence container in `DailyETLMain.dtsx`. The original SSIS flow is:
+This spec documents the behavior of the **Load Stock Item Dimension** sequence container in `DailyETLMain.dtsx`. The inner execution order (from precedence constraints) is:
 
-1. **Set TableName** — variable `@TableName` = `"Stock Item"`
-2. **Get Lineage Key** — calls `Integration.GetLineageKey` on the DW to create a lineage tracking row
-3. **Truncate Staging** — deletes all rows from `Integration.StockItem_Staging` on the DW
-4. **Get Last ETL Cutoff Time** — calls `Integration.GetLastETLCutoffTime` on the DW to retrieve the last-loaded watermark
-5. **Extract to Staging** — calls `Integration.GetStockItemUpdates` on the OLTP source (passing the last cutoff and current time), pipes results into `Integration.StockItem_Staging` on the DW
-6. **Migrate Staged Data** — calls `Integration.MigrateStagedStockItemData` on the DW, which closes off existing SCD2 rows and inserts new rows into `Dimension.[Stock Item]`
+1. **Set TableName** — `@TableName = "Stock Item"`
+2. **Get Lineage Key** — calls `Integration.GetLineageKey(@TableName, @TargetETLCutoffTime)` on the DW → inserts a row into `Integration.Lineage` with `Was Successful = 0`, returns `@LineageKey`
+3. **Truncate Staging** — `DELETE FROM Integration.StockItem_Staging`
+4. **Get Last ETL Cutoff Time** — calls `Integration.GetLastETLCutoffTime(@TableName)` on the DW → reads `Cutoff Time` from `Integration.[ETL Cutoff]` into `@LastETLCutoffTime`
+5. **Extract to Staging** — calls `Integration.GetStockItemUpdates(@LastETLCutoffTime, @TargetETLCutoffTime)` on the OLTP source, pipes results into `Integration.StockItem_Staging`
+6. **Migrate Staged Data** — calls `Integration.MigrateStagedStockItemData` on the DW, which:
+   - Closes off existing SCD2 rows
+   - Inserts new rows into `Dimension.[Stock Item]` (stamped with `@LineageKey`)
+   - Updates `Integration.Lineage` to mark the load successful
+   - Advances `Integration.[ETL Cutoff]` to the new cutoff time
 
-The PySpark migration must reproduce the **net effect** of steps 4–6: read changed rows from the source since the last watermark, apply transformations, and merge them into the destination as SCD Type 2.
+The PySpark migration must reproduce the **net effect**: read changed rows from the source since the last watermark, apply transformations, merge into the destination as SCD Type 2, and update the lineage/cutoff tracking tables.
 
 ---
 
@@ -316,20 +321,40 @@ In Delta/PySpark, this translates to a `MERGE` operation:
 - **When matched:** Update `Valid_To` to the earliest `Valid_From` of the incoming changes for that business key
 - **Insert:** All incoming rows (including historical change rows within the window)
 
+### Step 3 — Update lineage and advance cutoff
+
+After the merge, the original `MigrateStagedStockItemData` procedure completes the audit trail inside the same transaction:
+
+```sql
+-- Mark load successful
+UPDATE Integration.Lineage
+    SET [Data Load Completed] = SYSDATETIME(),
+        [Was Successful] = 1
+WHERE [Lineage Key] = @LineageKey;
+
+-- Advance cutoff for next run
+UPDATE Integration.[ETL Cutoff]
+    SET [Cutoff Time] = (SELECT [Source System Cutoff Time]
+                         FROM Integration.Lineage
+                         WHERE [Lineage Key] = @LineageKey)
+WHERE [Table Name] = N'Stock Item';
+```
+
+The PySpark implementation should call `complete_load(spark, lineage_key)` (from [01_prerequisites.md](01_prerequisites.md)) to perform the Delta equivalents of both updates.
+
 ---
 
 ## Watermark / Incremental Strategy
 
-The SSIS package tracks incremental progress using the `Integration.[ETL Cutoff]` table on the DW side:
+The watermark is stored in `Integration_ETL_Cutoff` (see [01_prerequisites.md](01_prerequisites.md)).
 
-| Column      | Value for Stock Item |
-|-------------|----------------------|
-| Table Name  | `Stock Item` |
-| Cutoff Time | Last successfully loaded `ValidFrom` timestamp |
+| Table_Name    | Cutoff_Time |
+|---------------|-------------|
+| `Stock Item`  | Last successfully loaded source-system cutoff time |
 
-**For the initial full load**, the cutoff time is set to a date before any data exists (e.g., `2000-01-01`), and `@NewCutoff` is the current system time. This causes the extraction procedure to return **all** rows from both `Warehouse.StockItems` and `Warehouse.StockItems_Archive`.
+**For the initial full load**, the seed value is `2012-12-31` (from `Configuration_ReseedETL`), and `@NewCutoff` is `GETDATE() - 5 minutes` (truncated to whole seconds). This causes the extraction procedure to return **all** rows from both `Warehouse.StockItems` and `Warehouse.StockItems_Archive`.
 
-The PySpark implementation needs its own watermark tracking. Since the destination is a Lakehouse (not the original DW), the cutoff can be stored as a separate Delta table, a metadata file, or derived from the maximum `Valid_From` in the existing dimension table.
+The PySpark load reads the cutoff from the Delta table before extraction, then advances it after a successful merge — both operations are handled by the lineage helpers in `01_prerequisites`.
 
 ---
 

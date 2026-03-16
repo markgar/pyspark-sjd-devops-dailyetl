@@ -8,10 +8,15 @@ The original `DailyETLMain.dtsx` SSIS package performs incremental loads from th
 
 ## Specs
 
+Implement in order — each spec builds on the previous.
+
 | File | Description |
 |---|---|
 | `CONSTITUTION.md` | Package name, stack, connections, auth, Fabric targets, testing strategy — shared across all specs |
-| `01_stock_item_dimension.md` | Stock Item dimension — SCD Type 2 load from OLTP to DW |
+| `01_prerequisites.md` | Lineage table, ETL cutoff table, seed data, cutoff time calculation — must be done first |
+| `02_payment_method_dimension.md` | Payment Method dimension — SCD Type 2 load from OLTP to Lakehouse |
+| `03_transaction_type_dimension.md` | Transaction Type dimension — SCD Type 2 load from OLTP to Lakehouse |
+| `04_stock_item_dimension.md` | Stock Item dimension — SCD Type 2 load from OLTP to Lakehouse |
 
 ## How to use
 
