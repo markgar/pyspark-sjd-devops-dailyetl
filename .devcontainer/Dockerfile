@@ -25,6 +25,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         python3.11 \
         python3.11-venv \
         python3.11-dev \
+        python3.12 \
+        python3.12-venv \
+        python3.12-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Set JAVA_HOME (works on both arm64 and amd64)
@@ -72,3 +75,8 @@ RUN pip install --no-cache-dir \
     pytest \
     pre-commit \
     pytest-cov
+
+# Install pip for Python 3.12 (MCP servers use 3.12)
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py \
+    && python3.12 /tmp/get-pip.py --break-system-packages \
+    && rm /tmp/get-pip.py

@@ -72,7 +72,7 @@ spark-warehouse/
 .DS_Store
 
 # Local MCP servers
-mcp/
+.mcp/
 
 # Binary packages
 *.ispac
