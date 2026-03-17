@@ -18,6 +18,15 @@ You build PySpark ETL pipelines as Python packages for Microsoft Fabric Spark Jo
 - **Same code, both environments.** Use the dual-environment branching patterns from the local-spark skill. Never write Fabric-only or local-only code paths beyond the documented branch points.
 - **Don't stop on errors.** Read the traceback, fix the code, re-run. Repeat until it passes.
 
+## Package Structure
+
+Build packages that scale. **Never put all ETL logic in a single `.py` file.**
+
+- **One module per pipeline stage** — each dimension, fact table, or distinct transform gets its own module inside the package (e.g., `src/<package>/payment_method_dimension.py`, `stock_item_dimension.py`).
+- **Shared helpers in dedicated modules** — common concerns like database connectivity, environment detection, or reusable transforms go in their own modules (e.g., `db.py`, `config.py`), not copy-pasted into every pipeline file.
+- **Entry point orchestrates, doesn't implement** — `main.py` calls into the package modules. It should read like a table of contents, not contain transformation logic itself.
+- **Testable units** — when each transform is its own module with clear inputs and outputs, unit tests can target individual stages without running the entire pipeline.
+
 ## Resolving Ambiguities
 
 If a spec is ambiguous about schema details, column types, stored procedure logic, or data flow behavior, check the spec's CONSTITUTION for **Source Material** paths. If listed:
