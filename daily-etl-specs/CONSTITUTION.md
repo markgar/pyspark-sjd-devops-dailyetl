@@ -72,6 +72,16 @@ The module auto-detects the runtime environment and selects the appropriate conn
 - Mark Spark-dependent tests with `@pytest.mark.spark`.
 - Integration tests (those with `_int_` in the name) are auto-marked and excluded from fast local runs.
 
+## Source Material
+
+These reference artifacts live in the repo. When a spec is ambiguous, inspect them with the dacpac or SSIS MCP tools:
+
+| Artifact | Path | Purpose |
+|----------|------|---------|
+| OLTP schema | `.bacpac/WideWorldImportersOLTP-Standard.bacpac` | Source database tables, views, stored procedures |
+| DW schema | `.bacpac/WideWorldImportersDW-Standard.bacpac` | Destination tables and merge procedures |
+| SSIS package | `.ispac/DailyETLMain.dtsx` | Original ETL data flows, execution order, component logic |
+
 ## Migration Context
 
 This spec set documents the migration of the **WideWorldImporters DailyETL** from SQL Server Integration Services (SSIS) to native PySpark running in Microsoft Fabric. The original SSIS package (`DailyETLMain.dtsx`) performs incremental dimension and fact loads from the `WideWorldImporters` OLTP database into the `WideWorldImportersDW` data warehouse. Each spec in this set covers one dimension or fact table.
