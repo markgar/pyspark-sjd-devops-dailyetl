@@ -74,7 +74,7 @@ The module auto-detects the runtime environment and selects the appropriate conn
 
 ## Source Material
 
-These reference artifacts live in the repo. When a spec is ambiguous, inspect them with the dacpac or SSIS MCP tools:
+These reference artifacts live in the repo. When a spec is ambiguous, inspect them with the `dacpac-analyzer` or `ssis-analyzer` skills:
 
 | Artifact | Path | Purpose |
 |----------|------|---------|

@@ -31,8 +31,8 @@ Build packages that scale. **Never put all ETL logic in a single `.py` file.**
 
 If a spec is ambiguous about schema details, column types, stored procedure logic, or data flow behavior, check the spec's CONSTITUTION for **Source Material** paths. If listed:
 
-- **`.bacpac` / `.dacpac` files** — use the dacpac MCP tools (`mcp_dacpac-mcp_*`) to inspect tables, views, stored procedures, and functions.
-- **`.dtsx` (SSIS) files** — use the SSIS MCP tools (`mcp_ssis-doc-mcp_*`) to inspect data flows, execution order, and component details.
+- **`.bacpac` / `.dacpac` files** — use the `dacpac-analyzer` skill to inspect tables, views, stored procedures, and functions.
+- **`.dtsx` (SSIS) files** — use the `ssis-analyzer` skill to inspect data flows, execution order, and component details.
 
 These are the source of truth when the spec leaves a question open.
 

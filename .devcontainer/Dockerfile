@@ -74,7 +74,7 @@ RUN ARCH="$(dpkg --print-architecture)" \
 
 ENV PATH="/opt/mssql-tools18/bin:${PATH}"
 
-# Install uv (fast Python package manager for MCP server venvs)
+# Install uv (fast Python package manager)
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 # Install Python packages (baked into image)
@@ -93,7 +93,7 @@ RUN pip install --no-cache-dir \
     pre-commit \
     pytest-cov
 
-# Install pip for Python 3.12 (MCP servers use 3.12)
+# Install pip for Python 3.12
 RUN curl -sS https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py \
     && python3.12 /tmp/get-pip.py --break-system-packages \
     && rm /tmp/get-pip.py

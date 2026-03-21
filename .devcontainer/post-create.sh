@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 # post-create.sh — runs as vscode user after the dev container is created.
-# Clones MCP servers and dev-loop into /opt, creates venvs, and marks
+# Clones dev-loop into /opt, installs Copilot CLI plugins, and marks
 # git safe directories.  Idempotent: safe to re-run on rebuilds.
 set -euo pipefail
 
 REPOS=(
-    "markgar/dacpac-mcp    /opt/dacpac-mcp"
-    "markgar/ssis-doc-mcp  /opt/ssis-doc-mcp"
     "markgar/dev-loop       /opt/dev-loop"
 )
 
@@ -35,15 +33,6 @@ for entry in "${REPOS[@]}"; do
     git config --global --add safe.directory "$dest"
 done
 
-# Create venvs for MCP servers that have a pyproject.toml
-for mcp_dir in /opt/dacpac-mcp /opt/ssis-doc-mcp; do
-    if [ -f "$mcp_dir/pyproject.toml" ]; then
-        echo "Setting up venv in $mcp_dir ..."
-        cd "$mcp_dir"
-        uv sync
-    fi
-done
-
 # Install GitHub Copilot CLI extension (needed by dev-loop)
 if ! gh extension list 2>/dev/null | grep -q gh-copilot; then
     echo "Installing gh-copilot extension ..."
@@ -51,5 +40,11 @@ if ! gh extension list 2>/dev/null | grep -q gh-copilot; then
 else
     echo "gh-copilot extension already installed"
 fi
+
+# Install SSIS migration analysis plugins for Copilot CLI
+echo "Installing ssis-migration plugins ..."
+copilot plugin marketplace add markgar/ssis-migration
+copilot plugin install ssis-analyzer@ssis-migration
+copilot plugin install dacpac-analyzer@ssis-migration
 
 echo "post-create.sh complete"
