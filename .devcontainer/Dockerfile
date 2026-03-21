@@ -97,3 +97,9 @@ RUN pip install --no-cache-dir \
 RUN curl -sS https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py \
     && python3.12 /tmp/get-pip.py --break-system-packages \
     && rm /tmp/get-pip.py
+
+# Install Node.js and GitHub Copilot CLI (needed by dev-loop)
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/* \
+    && npm install -g @github/copilot

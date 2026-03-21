@@ -33,14 +33,6 @@ for entry in "${REPOS[@]}"; do
     git config --global --add safe.directory "$dest"
 done
 
-# Install GitHub Copilot CLI extension (needed by dev-loop)
-if ! gh extension list 2>/dev/null | grep -q gh-copilot; then
-    echo "Installing gh-copilot extension ..."
-    gh extension install github/gh-copilot
-else
-    echo "gh-copilot extension already installed"
-fi
-
 # Install SSIS migration analysis plugins for Copilot CLI
 echo "Installing ssis-migration plugins ..."
 copilot plugin marketplace add markgar/ssis-migration
