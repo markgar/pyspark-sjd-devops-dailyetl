@@ -99,7 +99,9 @@ RUN curl -sS https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py \
     && rm /tmp/get-pip.py
 
 # Install Node.js and GitHub Copilot CLI (needed by dev-loop)
+# Symlink to /usr/local/bin so it wins over the VS Code copilot-chat shim
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/* \
-    && npm install -g @github/copilot
+    && npm install -g @github/copilot \
+    && ln -sf "$(npm prefix -g)/bin/copilot" /usr/local/bin/copilot
