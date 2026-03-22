@@ -2,6 +2,7 @@
 param(
     [string]$Model = 'claude-opus-4.6',
     [string]$BuildAgent = 'sjd-builder',
+    [string]$PlanEvalAgent = 'sjd-plan-eval',
     [string]$Resume
 )
 
@@ -37,12 +38,13 @@ finally {
 $ErrorActionPreference = 'Continue'
 
 # --- Launch dev-loop ---
-$buildAgentArgs = @{}
-if ($BuildAgent) { $buildAgentArgs['BuildAgent'] = $BuildAgent }
-if ($Resume) { $buildAgentArgs['Resume'] = $Resume }
+$agentArgs = @{}
+if ($BuildAgent) { $agentArgs['BuildAgent'] = $BuildAgent }
+if ($PlanEvalAgent) { $agentArgs['PlanEvalAgent'] = $PlanEvalAgent }
+if ($Resume) { $agentArgs['Resume'] = $Resume }
 
 pwsh /opt/dev-loop/dev-loop.ps1 `
     -SpecsDir ./daily-etl-specs `
     -ProjectDir . `
     -Model $Model `
-    @buildAgentArgs
+    @agentArgs
