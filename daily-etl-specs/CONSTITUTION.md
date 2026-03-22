@@ -63,15 +63,6 @@ The module auto-detects the runtime environment and selects the appropriate conn
 - **Environment:** `pyspark-sjd-devops-dailyetl-env`
 - **Default Lakehouse:** `pyspark-sjd-devops-dailyetl-lh` (schema-disabled)
 
-## Testing Strategy
-
-- **Unit tests** use hardcoded sample data as input fixtures — no live database queries at test time.
-- **Sample data** is pulled from the source database during development (not by the build agent, but by the spec author or developer writing the tests) and embedded in the test files.
-- **Expected outputs** are pulled from the destination DW (`WideWorldImportersDW` on `adventureworksltmg.database.windows.net`) during development and hardcoded as expected results.
-- **Business keys** (not surrogate keys) are used for equality checks, since surrogate keys are auto-incrementing and may differ between systems.
-- Mark Spark-dependent tests with `@pytest.mark.spark`.
-- Integration tests (those with `_int_` in the name) are auto-marked and excluded from fast local runs.
-
 ## Source Material
 
 These reference artifacts live in the repo. When a spec is ambiguous, inspect them with the `dacpac-analyzer` or `ssis-analyzer` skills:

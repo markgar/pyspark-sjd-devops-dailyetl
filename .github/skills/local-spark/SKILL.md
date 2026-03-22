@@ -102,6 +102,33 @@ else:
     spark = builder.getOrCreate()
 ```
 
+### Test-Optimized SparkSession
+
+The production SparkSession pattern above is for `main.py`. In **`conftest.py`**, use these additional settings to cut test runtime dramatically:
+
+```python
+builder = (
+    SparkSession.builder
+    .master("local[2]")
+    .appName("tests")
+    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+    .config("spark.sql.catalog.spark_catalog",
+            "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+    .config("spark.sql.shuffle.partitions", "1")
+    .config("spark.default.parallelism", "1")
+    .config("spark.ui.enabled", "false")
+)
+```
+
+| Setting | Default | Test value | Why |
+|---|---|---|---|
+| `spark.sql.shuffle.partitions` | 200 | 1 | Test data is tiny — 200 partitions wastes time |
+| `spark.default.parallelism` | cores | 1 | Same reason |
+| `spark.ui.enabled` | true | false | Saves memory and startup time |
+| `master` | `local[*]` | `local[2]` | Enough parallelism to catch issues; `local[*]` oversubscribes |
+
+The Spark fixture should be **session-scoped** (one startup per test run). Each test gets its own `lakehouse_root` via `tmp_path`/`monkeypatch` so Delta tables don't leak between tests.
+
 | Aspect | Local | Fabric |
 |---|---|---|
 | Spark master | `local[*]` (multi-threaded, single machine) | Managed by Fabric (multi-node cluster) |
