@@ -66,3 +66,11 @@ If `pyproject.toml` still contains `_PACKAGE_NAME_`:
 - `mkdir -p src/<package_name>` and create `__init__.py`.
 - Replace `_PACKAGE_NAME_` → `<package_name>` in `pyproject.toml`.
 - `pip install -e .`
+
+## Validating against known-good destination
+
+When running the end-to-end pipeline task, after verifying Delta tables have rows, check the constitution for a known-good destination. If one exists:
+
+1. **Row counts** — query the destination table and compare row counts against your local Delta output. A mismatch means the ETL logic is wrong.
+2. **Spot-check rows** — pick 2–3 real business rows from the local Delta table (not the seed/unknown row). Choose rows with different business keys, and if any have SCD2 history (multiple validity windows), include at least one. Query the same rows from the destination by business key and validity period. Compare all column values. Column name differences between local and destination are expected — match by meaning, not by name.
+3. If counts or values don't match, fix the code and re-run until they do.

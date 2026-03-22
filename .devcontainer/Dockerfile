@@ -54,8 +54,11 @@ RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
     && echo "deb [arch=amd64,arm64] https://packages.microsoft.com/ubuntu/24.04/prod noble main" > /etc/apt/sources.list.d/mssql-release.list \
     && apt-get update \
     && apt-get install -y gh \
-    && ACCEPT_EULA=Y apt-get install -y mssql-tools18 \
     && rm -rf /var/lib/apt/lists/*
+
+# Install go-sqlcmd (supports ActiveDirectoryDefault auth)
+RUN curl -sL "https://github.com/microsoft/go-sqlcmd/releases/download/v1.9.0/sqlcmd-linux-amd64.tar.bz2" \
+    | tar -xj -C /usr/local/bin sqlcmd
 
 # Install PowerShell (the apt package is amd64-only; use tarball on arm64)
 ARG PS_VERSION=7.4.6
@@ -72,7 +75,7 @@ RUN ARCH="$(dpkg --print-architecture)" \
          && rm /tmp/ps.tar.gz; \
        fi
 
-ENV PATH="/opt/mssql-tools18/bin:${PATH}"
+# go-sqlcmd is already in /usr/local/bin (on PATH)
 
 # Install uv (fast Python package manager)
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
