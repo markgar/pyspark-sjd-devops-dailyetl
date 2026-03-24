@@ -67,6 +67,9 @@ derby.log
 metastore_db/
 spark-warehouse/
 
+# Local lakehouse (Delta tables created by ETL runs)
+lakehouse/
+
 # VS Code (use wildcard so negations work)
 .vscode/*
 !.vscode/mcp.json

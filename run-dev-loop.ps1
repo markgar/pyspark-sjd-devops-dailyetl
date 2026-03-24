@@ -3,6 +3,7 @@ param(
     [string]$Model = 'claude-opus-4.6',
     [string]$BuildAgent = 'sjd-builder',
     [string]$PlanEvalAgent = 'sjd-plan-eval',
+    [string]$ReviewAgent = 'sjd-reviewer',
     [string]$Resume,
     [int]$PauseBetweenSpecs = 10
 )
@@ -71,12 +72,24 @@ else {
     Write-Host ' OK' -ForegroundColor Green
 }
 
+# 3. Destination DW connectivity check (known-good validation target)
+Write-Host "  Checking destination DW ($sqlServer/WideWorldImportersDW)..." -NoNewline
+$dwResult = sqlcmd -S $sqlServer -d WideWorldImportersDW --authentication-method ActiveDirectoryDefault -Q "SELECT 1" -h -1 2>&1
+if ($LASTEXITCODE -ne 0) {
+    Write-Host ' FAIL' -ForegroundColor Red
+    Write-Error "Cannot connect to WideWorldImportersDW. The builder needs this for validation. Detail: $dwResult"
+}
+else {
+    Write-Host ' OK' -ForegroundColor Green
+}
+
 $ErrorActionPreference = 'Continue'
 
 # --- Launch dev-loop ---
 $agentArgs = @{}
 if ($BuildAgent) { $agentArgs['BuildAgent'] = $BuildAgent }
 if ($PlanEvalAgent) { $agentArgs['PlanEvalAgent'] = $PlanEvalAgent }
+if ($ReviewAgent) { $agentArgs['ReviewAgent'] = $ReviewAgent }
 if ($Resume) { $agentArgs['Resume'] = $Resume }
 
 pwsh /opt/dev-loop/dev-loop.ps1 `
