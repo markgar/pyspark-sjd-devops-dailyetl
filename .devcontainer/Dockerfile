@@ -1,7 +1,7 @@
 # Pull Spark from the official Docker image (much faster than archive.apache.org)
 FROM apache/spark:3.5.0 AS spark
 
-FROM mcr.microsoft.com/devcontainers/base:ubuntu
+FROM mcr.microsoft.com/devcontainers/base:ubuntu-24.04
 
 # -------------------------------------------------------------------
 # Match Microsoft Fabric Runtime 1.3

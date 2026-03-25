@@ -1,0 +1,8 @@
+# Ignore symlinked plugin skills (created by post-create.sh).
+# Repo-native skills are tracked explicitly via git add -f.
+*
+!.gitignore
+!fabric-ops/
+!fabric-ops/**
+!local-spark/
+!local-spark/**

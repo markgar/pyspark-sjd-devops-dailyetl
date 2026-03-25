@@ -33,10 +33,20 @@ for entry in "${REPOS[@]}"; do
     git config --global --add safe.directory "$dest"
 done
 
-# Install SSIS migration analysis plugins for Copilot CLI
-echo "Installing ssis-migration plugins ..."
-copilot plugin marketplace add markgar/ssis-migration
-copilot plugin install ssis-analyzer@ssis-migration
-copilot plugin install dacpac-analyzer@ssis-migration
+# ── Symlink Copilot plugin skills into .github/skills/ for auto-discovery ──
+PLUGIN_DIR="/home/vscode/.copilot/installed-plugins"
+SKILLS_DIR="/workspaces/pyspark-sjd-devops-dailyetl/.github/skills"
+
+if [ -d "$PLUGIN_DIR" ]; then
+    find "$PLUGIN_DIR" -name SKILL.md -path '*/skills/*/SKILL.md' | while read -r skill_md; do
+        skill_folder=$(dirname "$skill_md")
+        skill_name=$(basename "$skill_folder")
+        target="$SKILLS_DIR/$skill_name"
+        if [ ! -e "$target" ]; then
+            ln -s "$skill_folder" "$target"
+            echo "Linked skill: $skill_name -> $skill_folder"
+        fi
+    done
+fi
 
 echo "post-create.sh complete"

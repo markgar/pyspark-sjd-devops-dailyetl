@@ -6,6 +6,10 @@
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
+  "mounts": [
+    "source=${localEnv:HOME}/.agents/skills,target=/home/vscode/.agents/skills,type=bind,readonly",
+    "source=${localEnv:HOME}/.copilot,target=/home/vscode/.copilot,type=bind,readonly"
+  ],
   "customizations": {
     "vscode": {
       "extensions": [
@@ -32,7 +36,11 @@
         },
         "files.trimTrailingWhitespace": true,
         "python.testing.unittestEnabled": false,
-        "python.testing.pytestEnabled": true
+        "python.testing.pytestEnabled": true,
+        "github.copilot.chat.additionalReadAccessFolders": [
+          "/home/vscode/.agents/skills",
+          "/home/vscode/.copilot"
+        ]
       }
     }
   },
