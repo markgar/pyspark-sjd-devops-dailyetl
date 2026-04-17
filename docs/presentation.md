@@ -178,21 +178,6 @@ Keeps Fabric interactions consistent; no reinvented API calls.
 
 ---
 
-## What you might be missing / could add next
-
-- **CI in GitHub Actions** — ruff + pytest on every PR, artifact the `.whl`
-- **CD pipeline** — auto-deploy `.whl` to Fabric Environment on merge to `main`
-- **Environment promotion** — dev / test / prod Fabric workspaces via variables
-- **Secret management** — Key Vault + workspace identity (already partial)
-- **Data quality gates** — Great Expectations or `dbt test`-style checks
-- **Observability** — structured logging → Log Analytics, lineage via OpenLineage
-- **Spec templates per pattern** — dim load, fact load, SCD2, CDC
-- **Golden datasets** — small Delta fixtures checked in for deterministic tests
-- **Cost guardrails** — Fabric capacity monitoring, job size limits
-- **Agent evals** — measure spec → working SJD success rate over time
-
----
-
 ## Why this works
 
 - **Specs are reviewable** — PRs on markdown before code is written
