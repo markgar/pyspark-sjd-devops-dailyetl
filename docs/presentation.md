@@ -128,14 +128,14 @@ flowchart LR
   R --> F[.whl → Fabric SJD]
 </div>
 
-1. **spec-writer** reads the legacy SSIS package + database schema and produces a `CONSTITUTION.md` (global rules) plus one numbered markdown spec per pipeline.
-2. **plan** — default Copilot turns one spec into a checklist of commit-sized tasks.
-3. **plan-eval** — `sjd-plan-eval` checks the plan for gaps, ordering, scope creep; fixes it in place.
-4. **build** — `sjd-builder` works the checklist, writing code + tests, running pytest, committing each task.
-5. **build-eval** — `sjd-reviewer` does a senior-SWE review pass on the result.
-6. Output: a tested `.whl` deployed as a Spark Job Definition.
+1. **spec-writer** — SSIS + DB schema → CONSTITUTION + one spec per pipeline.
+2. **plan** — break spec into commit-sized tasks.
+3. **plan-eval** — `sjd-plan-eval` checks scope/ordering; fixes in place.
+4. **build** — `sjd-builder` works the checklist; code + tests + commits.
+5. **build-eval** — `sjd-reviewer` senior-SWE pass.
+6. Output: tested `.whl` deployed as an SJD.
 
-**dev-loop** runs phases 2–5 per spec, one spec at a time.
+**dev-loop** runs phases 2–5 per spec.
 
 ---
 
