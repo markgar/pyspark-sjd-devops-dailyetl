@@ -34,11 +34,9 @@ From SSIS packages → markdown specs → tested PySpark `.whl` → deployed SJD
 
 ## Major components
 
-![bg right:40% fit](images/sjd-builder-chat-mode.png)
-
 - **GitHub repo** (template + PRs + CI)
 - **Dev container** (Fabric Runtime 1.3 parity)
-- **dev-loop** (orchestrator: plan → build → review per spec)
+- **dev-loop** (orchestrator: plan → plan-eval → build → build-eval per spec)
 - **Custom Copilot agents** (spec-writer, sjd-plan-eval, sjd-builder, sjd-reviewer)
 - **Agent skills** (SSIS, DACPAC, Fabric ops, local-spark, docs)
 - **Spec sets** (CONSTITUTION + numbered specs)
