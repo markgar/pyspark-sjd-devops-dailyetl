@@ -39,7 +39,7 @@ From SSIS packages → markdown specs → tested PySpark `.whl` → deployed SJD
 - **GitHub repo** (template + PRs + CI)
 - **Dev container** (Fabric Runtime 1.3 parity)
 - **dev-loop** (orchestrator: plan → build → review per spec)
-- **Custom Copilot agents** (spec-writer, sjd-plan-eval, sjd-builder, sjd-reviewer)
+- **Custom Copilot agents** (spec-writer, sjd-planner, sjd-plan-eval, sjd-builder, sjd-reviewer)
 - **Agent skills** (SSIS, DACPAC, Fabric ops, local-spark, docs)
 - **Spec sets** (CONSTITUTION + numbered specs)
 - **devops_helpers/** (Fabric REST CLI)
@@ -64,13 +64,13 @@ From SSIS packages → markdown specs → tested PySpark `.whl` → deployed SJD
 
 ## The agents
 
-| Agent | Role |
+| dev-loop phase | Custom agent used here |
 |---|---|
-| **spec-writer** | Reads `.ispac` / `.bacpac` → writes CONSTITUTION + numbered specs |
-| *(plan)* | **No custom agent** — handled by dev-loop's `plan.ps1` phase |
-| **sjd-plan-eval** | Reviews the generated plan before any code is written |
-| **sjd-builder** | Implements spec → code + tests → runs locally → deploys SJD |
-| **sjd-reviewer** | Reviews PySpark for correctness, perf, Delta best practices |
+| *(pre)* spec authoring | **spec-writer** — `.ispac` / `.bacpac` → CONSTITUTION + specs |
+| plan | **sjd-planner** *(or default copilot)* |
+| plan-eval | **sjd-plan-eval** |
+| build | **sjd-builder** |
+| build-eval (review) | **sjd-reviewer** |
 
 Each has scoped tools and a tight system prompt — no single mega-agent.
 
@@ -81,16 +81,17 @@ Each has scoped tools and a tight system prompt — no single mega-agent.
 [github.com/markgar/dev-loop](https://github.com/markgar/dev-loop) — PowerShell module that drives GitHub Copilot CLI one spec at a time.
 
 ```
-Invoke-DevLoop -SpecsDir ./specs -ProjectDir .
-  │
-  ├─ preflight    — discover specs, review CONSTITUTION
-  └─ per spec:
-      ├─ plan         (default copilot)        ← no custom agent
-      ├─ plan-eval    (--agent sjd-plan-eval)
-      ├─ build        (--agent sjd-builder, loops until plan is checked off)
-      └─ review       (--agent sjd-reviewer)
+Invoke-DevLoop -SpecsDir ./specs -ProjectDir . `
+  -PlanAgent sjd-planner `
+  -PlanEvalAgent sjd-plan-eval `
+  -BuildAgent sjd-builder `
+  -BuildEvalAgent sjd-reviewer
+
+  preflight → [ plan → plan-eval → build → build-eval ] per spec
 ```
 
+- **4 phases per spec** — plan, plan-eval, build, build-eval (aka review)
+- Every phase can be pointed at a **custom agent** via parameter; defaults to plain Copilot
 - Each phase = `copilot -p "…" --yolo` with a crafted prompt
 - Tracked in `.dev-loop/<timestamp>/` — logs, plan-*.md, manifest.json
 - Checkpoint/resume: finished phases skipped on re-run
@@ -116,17 +117,14 @@ Skills keep agents grounded and consistent across runs.
 flowchart LR
   A[SSIS .ispac / .bacpac] --> B(spec-writer)
   B --> C[CONSTITUTION.md + numbered specs]
-  C --> P[plan<br/>dev-loop phase]
-  P --> D(sjd-plan-eval)
-  D --> E(sjd-builder)
-  E --> F[src/ package + tests]
-  F --> G[pytest local Spark]
-  G --> H[.whl → Fabric Environment]
-  H --> I[Spark Job Definition]
-  I --> J(sjd-reviewer)
+  C --> P(plan)
+  P --> D(plan-eval)
+  D --> E(build)
+  E --> R(build-eval)
+  R --> F[.whl → Fabric SJD]
 ```
 
-dev-loop orchestrates **plan → plan-eval → build → review** per spec.
+**dev-loop** drives the 4 phases per spec; each phase can call a **custom agent** (`sjd-planner`, `sjd-plan-eval`, `sjd-builder`, `sjd-reviewer`).
 
 ---
 
