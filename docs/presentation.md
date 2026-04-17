@@ -6,6 +6,11 @@ size: 16:9
 title: Spec-Driven PySpark ETL for Microsoft Fabric
 ---
 
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({ startOnLoad: true, theme: "default" });
+</script>
+
 # Spec-Driven PySpark ETL for Microsoft Fabric
 
 From SSIS packages → markdown specs → tested PySpark `.whl` → deployed SJD
@@ -112,7 +117,7 @@ Skills keep agents grounded and consistent across runs.
 
 Start with source artifacts, end with a running Fabric SJD. Every arrow is a reviewable commit.
 
-```mermaid
+<div class="mermaid">
 flowchart LR
   A[SSIS .ispac / .bacpac] --> B(spec-writer)
   B --> C[CONSTITUTION.md + numbered specs]
@@ -121,7 +126,7 @@ flowchart LR
   D --> E(build)
   E --> R(build-eval)
   R --> F[.whl → Fabric SJD]
-```
+</div>
 
 1. **spec-writer** reads the legacy SSIS package + database schema and produces a `CONSTITUTION.md` (global rules) plus one numbered markdown spec per pipeline.
 2. **plan** — default Copilot turns one spec into a checklist of commit-sized tasks.
