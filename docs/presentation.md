@@ -38,7 +38,8 @@ From SSIS packages → markdown specs → tested PySpark `.whl` → deployed SJD
 
 - **GitHub repo** (template + PRs + CI)
 - **Dev container** (Fabric Runtime 1.3 parity)
-- **Custom Copilot agents** (spec-writer, sjd-builder, sjd-reviewer, sjd-plan-eval)
+- **dev-loop** (orchestrator: plan → build → review per spec)
+- **Custom Copilot agents** (spec-writer, sjd-plan-eval, sjd-builder, sjd-reviewer)
 - **Agent skills** (SSIS, DACPAC, Fabric ops, local-spark, docs)
 - **Spec sets** (CONSTITUTION + numbered specs)
 - **devops_helpers/** (Fabric REST CLI)
@@ -66,11 +67,33 @@ From SSIS packages → markdown specs → tested PySpark `.whl` → deployed SJD
 | Agent | Role |
 |---|---|
 | **spec-writer** | Reads `.ispac` / `.bacpac` → writes CONSTITUTION + numbered specs |
-| **sjd-plan-eval** | Reviews an implementation plan before code is written |
+| *(plan)* | **No custom agent** — handled by dev-loop's `plan.ps1` phase |
+| **sjd-plan-eval** | Reviews the generated plan before any code is written |
 | **sjd-builder** | Implements spec → code + tests → runs locally → deploys SJD |
 | **sjd-reviewer** | Reviews PySpark for correctness, perf, Delta best practices |
 
 Each has scoped tools and a tight system prompt — no single mega-agent.
+
+---
+
+## dev-loop — the orchestrator
+
+[github.com/markgar/dev-loop](https://github.com/markgar/dev-loop) — PowerShell module that drives GitHub Copilot CLI one spec at a time.
+
+```
+Invoke-DevLoop -SpecsDir ./specs -ProjectDir .
+  │
+  ├─ preflight    — discover specs, review CONSTITUTION
+  └─ per spec:
+      ├─ plan         (default copilot)        ← no custom agent
+      ├─ plan-eval    (--agent sjd-plan-eval)
+      ├─ build        (--agent sjd-builder, loops until plan is checked off)
+      └─ review       (--agent sjd-reviewer)
+```
+
+- Each phase = `copilot -p "…" --yolo` with a crafted prompt
+- Tracked in `.dev-loop/<timestamp>/` — logs, plan-*.md, manifest.json
+- Checkpoint/resume: finished phases skipped on re-run
 
 ---
 
@@ -93,7 +116,8 @@ Skills keep agents grounded and consistent across runs.
 flowchart LR
   A[SSIS .ispac / .bacpac] --> B(spec-writer)
   B --> C[CONSTITUTION.md + numbered specs]
-  C --> D(sjd-plan-eval)
+  C --> P[plan<br/>dev-loop phase]
+  P --> D(sjd-plan-eval)
   D --> E(sjd-builder)
   E --> F[src/ package + tests]
   F --> G[pytest local Spark]
@@ -101,6 +125,8 @@ flowchart LR
   H --> I[Spark Job Definition]
   I --> J(sjd-reviewer)
 ```
+
+dev-loop orchestrates **plan → plan-eval → build → review** per spec.
 
 ---
 
