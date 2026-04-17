@@ -23,24 +23,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build deck with Marp
-        uses: docker://marpteam/marp-cli:v3
+      - uses: actions/setup-node@v4
         with:
-          args: --html --allow-local-files -o site/index.html docs/presentation.md
-        env:
-          MARP_USER: root:root
+          node-version: "20"
 
-      - name: Also export PDF
-        uses: docker://marpteam/marp-cli:v3
-        with:
-          args: --html --allow-local-files --pdf -o site/presentation.pdf docs/presentation.md
-        env:
-          MARP_USER: root:root
+      - name: Install Marp CLI
+        run: npm install -g @marp-team/marp-cli@latest
 
-      - name: Copy images next to the deck
+      - name: Build HTML
+        run: |
+          mkdir -p site
+          marp --html --allow-local-files -o site/index.html docs/presentation.md
+
+      - name: Build PDF
+        run: marp --html --allow-local-files --pdf -o site/presentation.pdf docs/presentation.md
+
+      - name: Copy images
         run: |
           mkdir -p site/images
-          if [ -d docs/images ]; then cp -r docs/images/* site/images/ 2>/dev/null || true; fi
+          if [ -d docs/images ]; then cp -r docs/images/. site/images/ 2>/dev/null || true; fi
 
       - uses: actions/upload-pages-artifact@v3
         with:
