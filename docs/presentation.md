@@ -78,14 +78,14 @@ Each has scoped tools and a tight system prompt — no single mega-agent.
 
 [github.com/markgar/dev-loop](https://github.com/markgar/dev-loop) — PowerShell module that drives GitHub Copilot CLI one spec at a time.
 
-```
+<pre style="font-size: 0.55em; line-height: 1.2;">
 Invoke-DevLoop -SpecsDir ./specs -ProjectDir . `
   -PlanEvalAgent sjd-plan-eval `
   -BuildAgent sjd-builder `
   -BuildEvalAgent sjd-reviewer
 
   preflight → [ plan → plan-eval → build → build-eval ] per spec
-```
+</pre>
 
 - **4 phases per spec** — plan, plan-eval, build, build-eval (aka review)
 - Every phase can be pointed at a **custom agent** via parameter; defaults to plain Copilot
