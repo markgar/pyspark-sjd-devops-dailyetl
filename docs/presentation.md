@@ -65,7 +65,7 @@ From SSIS packages → markdown specs → tested PySpark `.whl` → deployed SJD
 | dev-loop phase | Custom agent used here |
 |---|---|
 | *(pre)* spec authoring | **spec-writer** — `.ispac` / `.bacpac` → CONSTITUTION + specs |
-| plan | *default Copilot* |
+| plan | *default Copilot* (prompt lives in dev-loop's `plan.ps1`) |
 | plan-eval | **sjd-plan-eval** |
 | build | **sjd-builder** |
 | build-eval (review) | **sjd-reviewer** |
