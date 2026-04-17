@@ -112,6 +112,8 @@ Skills keep agents grounded and consistent across runs.
 
 ## Spec-driven workflow
 
+Start with source artifacts, end with a running Fabric SJD. Every arrow is a reviewable commit.
+
 ```mermaid
 flowchart LR
   A[SSIS .ispac / .bacpac] --> B(spec-writer)
@@ -123,7 +125,14 @@ flowchart LR
   R --> F[.whl → Fabric SJD]
 ```
 
-**dev-loop** drives the 4 phases per spec; plan-eval, build, and build-eval are pointed at the custom agents (`sjd-plan-eval`, `sjd-builder`, `sjd-reviewer`). Plan runs with default Copilot.
+1. **spec-writer** reads the legacy SSIS package + database schema and produces a `CONSTITUTION.md` (global rules) plus one numbered markdown spec per pipeline.
+2. **plan** — default Copilot turns one spec into a checklist of commit-sized tasks.
+3. **plan-eval** — `sjd-plan-eval` checks the plan for gaps, ordering, scope creep; fixes it in place.
+4. **build** — `sjd-builder` works the checklist, writing code + tests, running pytest, committing each task.
+5. **build-eval** — `sjd-reviewer` does a senior-SWE review pass on the result.
+6. Output: a tested `.whl` deployed as a Spark Job Definition.
+
+**dev-loop** runs phases 2–5 per spec, one spec at a time.
 
 ---
 
