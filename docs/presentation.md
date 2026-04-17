@@ -39,7 +39,7 @@ From SSIS packages → markdown specs → tested PySpark `.whl` → deployed SJD
 - **GitHub repo** (template + PRs + CI)
 - **Dev container** (Fabric Runtime 1.3 parity)
 - **dev-loop** (orchestrator: plan → build → review per spec)
-- **Custom Copilot agents** (spec-writer, sjd-planner, sjd-plan-eval, sjd-builder, sjd-reviewer)
+- **Custom Copilot agents** (spec-writer, sjd-plan-eval, sjd-builder, sjd-reviewer)
 - **Agent skills** (SSIS, DACPAC, Fabric ops, local-spark, docs)
 - **Spec sets** (CONSTITUTION + numbered specs)
 - **devops_helpers/** (Fabric REST CLI)
@@ -67,7 +67,7 @@ From SSIS packages → markdown specs → tested PySpark `.whl` → deployed SJD
 | dev-loop phase | Custom agent used here |
 |---|---|
 | *(pre)* spec authoring | **spec-writer** — `.ispac` / `.bacpac` → CONSTITUTION + specs |
-| plan | **sjd-planner** *(or default copilot)* |
+| plan | *default Copilot* |
 | plan-eval | **sjd-plan-eval** |
 | build | **sjd-builder** |
 | build-eval (review) | **sjd-reviewer** |
@@ -82,7 +82,6 @@ Each has scoped tools and a tight system prompt — no single mega-agent.
 
 ```
 Invoke-DevLoop -SpecsDir ./specs -ProjectDir . `
-  -PlanAgent sjd-planner `
   -PlanEvalAgent sjd-plan-eval `
   -BuildAgent sjd-builder `
   -BuildEvalAgent sjd-reviewer
@@ -124,7 +123,7 @@ flowchart LR
   R --> F[.whl → Fabric SJD]
 ```
 
-**dev-loop** drives the 4 phases per spec; each phase can call a **custom agent** (`sjd-planner`, `sjd-plan-eval`, `sjd-builder`, `sjd-reviewer`).
+**dev-loop** drives the 4 phases per spec; plan-eval, build, and build-eval are pointed at the custom agents (`sjd-plan-eval`, `sjd-builder`, `sjd-reviewer`). Plan runs with default Copilot.
 
 ---
 
